@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from 'ws';
 
-const wss = new WebSocketServer({host: "192.168.122.1", port: 8080 });
+const wss = new WebSocketServer({host: "192.168.86.50", port: 6090 });
 
 let msglist = []
 console.log("connecting")

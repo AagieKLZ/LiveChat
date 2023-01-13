@@ -8,7 +8,7 @@ function generateRandomName() {
   return `${randomFirstName} ${randomLastName}`;
 }
   
-  const ws = new WebSocket("ws://192.168.122.1:8080");
+  const ws = new WebSocket("ws://192.168.86.50:6090");
   let msglist = []
   let user = generateRandomName()
   let brr = false
@@ -66,15 +66,25 @@ function generateRandomName() {
         brr = false;
     }, 2000);
   }
-  
-  
+  let messages;
+
+  function scrollToBottom() {
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  $: if (msglist) {
+    setTimeout(() => {
+      scrollToBottom();
+    }, 0);
+  }
+
 </script>
 
 {#if connected}<span style="color: greenyellow; font-weight: bold;">Connected</span><br>{/if}
 {#if !connected}<span style="color: red; font-weight: bold;">Not Connected</span><br>{/if}
 <label for="username">Username: </label>
 <input type="text" name="username" id="" bind:value={user} disabled={msglist.length > 0}>
-<div class:zumb={brr} class="messages">
+<div class:zumb={brr} class="messages" id="messages" bind:this={messages}>
 {#each msglist as msg}
 <div class="msg" class:own={msg.user.toString() == user.toString()}>
   <div class="user">{msg.user.toString().charAt(0).toUpperCase()}</div>
@@ -100,6 +110,8 @@ function generateRandomName() {
   height: 50px;
   align-items: center;
   padding-right: 20px;
+  padding-left: 20px;
+  overflow: scroll;
 }
 
 .clearbut{
@@ -112,6 +124,7 @@ function generateRandomName() {
   height: 50px;
   line-height: 50px;
   justify-self: self-start;
+  min-width: 50px;
 }
 
 .own {
@@ -120,6 +133,7 @@ function generateRandomName() {
 }
 .content{
   padding-left: 20px;
+  padding-right: 70px;
 }
 
 .messages{
