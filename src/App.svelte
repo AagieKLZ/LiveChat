@@ -1,6 +1,9 @@
 <script>
+import * as marked from 'marked'
+
   const firstNames = ["Emily", "Michael", "Jacob", "Madison", "Isabella", "Matthew"];
 const lastNames = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Davis"];
+
 
 function generateRandomName() {
   const randomFirstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -35,8 +38,10 @@ function generateRandomName() {
   let msg = ""
   
   $: msglist = msglist
+
   function sendMsg(){
-    if (connected){
+    if (connected && msg != "" && msg.length < 340){
+      msg = marked.parse(msg)
       let x = {user: user, msg: msg}
       ws.send(JSON.stringify(x))
       msg = ""
@@ -83,12 +88,12 @@ function generateRandomName() {
 {#if connected}<span style="color: greenyellow; font-weight: bold;">Connected</span><br>{/if}
 {#if !connected}<span style="color: red; font-weight: bold;">Not Connected</span><br>{/if}
 <label for="username">Username: </label>
-<input type="text" name="username" id="" bind:value={user} disabled={msglist.length > 0}>
-<div class:zumb={brr} class="messages" id="messages" bind:this={messages}>
+<input type="text" name="username" id="" bind:value={user}>
+<div class:zumb={brr} class="messages" id="messages" bind:this={messages} tabindex="-1">
 {#each msglist as msg}
-<div class="msg" class:own={msg.user.toString() == user.toString()}>
-  <div class="user">{msg.user.toString().charAt(0).toUpperCase()}</div>
-  <div class="content">{msg.msg}</div>
+<div class="msg" class:own={msg.user.toString() == user.toString()} tabindex="-1">
+  <div class="user">{msg.user.toString().split(" ")[0]}</div>
+  <div class="content" tabindex="-1">{@html msg.msg}</div>
 </div>
 {/each}
 </div>
@@ -105,35 +110,49 @@ function generateRandomName() {
   color: black;
   border-radius: 50px;
   margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  height: 50px;
+  min-height: 110px;
+  max-height: 600px;
   align-items: center;
-  padding-right: 20px;
-  padding-left: 20px;
-  overflow: scroll;
+  padding-right: 25px;
+  padding-left: 25px;
+  min-width: 25%;
+  max-width: 90%;
+  overflow-y: scroll;
+  animation: msgin 0.25s linear;
 }
 
 .clearbut{
   margin-top: 20px;
 }
 .user{
-  border-radius: 100%;
-  background-color: lightcoral;
-  width: 50px;
-  height: 50px;
+  width: 100%;
+  height: auto;
   line-height: 50px;
   justify-self: self-start;
   min-width: 50px;
+  text-align: left;
+  font-weight: bold;
 }
 
 .own {
-  flex-direction: row-reverse;
+  text-align: right;
   background-color: lightgreen;
+  margin-left: 5%;
+  animation: ownin 0.25s linear;
 }
+.own > .user{
+  text-align: right;
+}
+
+.own > .content{
+  text-align: right;
+  padding-right: 25px;
+}
+
 .content{
-  padding-left: 20px;
   padding-right: 70px;
+  text-align: left;
+  overflow-y: scroll;
 }
 
 .messages{
@@ -145,6 +164,7 @@ function generateRandomName() {
   padding: 5px;
   padding-top: 15px;
   border-radius: 25px;
+  overflow-x: hidden;
 }
 
 @keyframes zumb{
@@ -180,6 +200,24 @@ function generateRandomName() {
   }
   100%{
     transform: translateX(10px) translateY(10px);
+  }
+}
+
+@keyframes ownin{
+  0% {
+    transform: translateX(125px)
+  }
+  100%{
+    transform: translateX(0px)
+  }
+}
+
+@keyframes msgin{
+  0% {
+    transform: translateX(-125px)
+  }
+  100%{
+    transform: translateX(0px)
   }
 }
 

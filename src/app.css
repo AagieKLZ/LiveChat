@@ -32,6 +32,16 @@ body {
   text-align: center;
 }
 
+input[type=text]{
+  min-width: 700px;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
