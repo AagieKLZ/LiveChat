@@ -1,34 +1,42 @@
 import { WebSocketServer, WebSocket } from 'ws';
 
-const wss = new WebSocketServer({host: "192.168.86.50", port: 6090 });
+const wss = new WebSocketServer({ port: 6090 });
 
 let msglist = []
 console.log("connecting")
+
+// Función a ejecutar cuando se inicializa el servidor
 wss.on('connection', function connection(ws) {
   console.log("connected")
+
+  // Función a ejecutar cuando se recibe un mensaje
   ws.on('message', function message(data) {
-    console.log('received');
     const dataString = data.toString()
-    console.log({dataString})
     const parsedData = JSON.parse(dataString)
-    console.log(parsedData["msg"])
-    if(!parsedData.user && parsedData.msg == "clear"){
+
+    // Función para vaciar el chat
+    if (!parsedData.user && parsedData.msg == "clear") {
       msglist = []
-    }else if (!parsedData.user && parsedData.msg == "zumb"){
-      wss.clients.forEach(function each(client){
-        if (client.readyState === WebSocket.OPEN){
-          client.send(JSON.stringify({user: undefined, msg: "zumb"}))
+
+      // Función para enviar zumbido a todos los clientes conectados
+    } else if (!parsedData.user && parsedData.msg == "zumb") {
+      wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ user: undefined, msg: "zumb" }))
         }
       })
-    } else{
+
+      // Función para guardar el mensaje en el array
+    } else {
       msglist.push(parsedData)
-      console.log({msglist})
+      console.log({ msglist })
     }
-    wss.clients.forEach(function each(client){
-      if (client.readyState === WebSocket.OPEN){
+
+    // Función para enviar el listado de mensajes en el a todos los clientes conectados
+    wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(msglist))
       }
     })
   });
-
 });

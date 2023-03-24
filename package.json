@@ -11,9 +11,11 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.0",
     "svelte": "^3.54.0",
-    "vite": "^4.0.0"
+    "vite": "^4.0.0",
+    "vite-plugin-mkcert": "^1.11.0"
   },
   "dependencies": {
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
     "marked": "^4.2.5",
     "ws": "^8.12.0"
   }
